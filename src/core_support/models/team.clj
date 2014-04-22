@@ -3,6 +3,7 @@
               [monger.collection :as mc]
               [monger.result :as mr]
               [monger.operators :refer :all]
+              [clojure.pprint :as pp]
               [clj-time.core :as ct]
               [clj-time.coerce :as cc]
               [clj-time.periodic :as cp]
@@ -72,7 +73,7 @@
        (map #(min (cc/to-long to) %))
        (map cc/from-long)
        (map #(ct/in-days (ct/interval % to)))
-       (map #(* % 5) %)
+       (map #(* % 5))
        (reduce +)))
 
 (defn get-partner-score [[p1, p2 :as partners]]
@@ -109,6 +110,6 @@
           (if-not (empty? dates) 
             (let [support (get-best-score members (first dates))
                   updated (update-support! (first dates) members (:pair (first support)))]
-              (do (println support) (println updated) (println (map cc/to-long dates))
+              (do (pp/pprint support) (pp/pprint updated) (println (map cc/to-long dates)) (println "---------------")
               (recur updated (rest dates))))))))
 
