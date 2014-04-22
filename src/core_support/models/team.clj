@@ -56,6 +56,13 @@
       (valid/set-error :create (str (:name member) " could not be added")))))
 
 
+(defn reset-docs! []
+  (if-not (mr/ok? (mc/update team-collection {:lastdate { $exists true } :lastpartner { $exists true }}
+                                             {$set {:lastpartner nil :lastdate (cc/to-long (ct/epoch))}} :multi true))
+    (valid/set-error :reset "Failed to reset dates and partners")
+    (valid/set-error :reset "Successfully reset dates and partners")))
+
+
 (defn update-support! [date m [p1 p2 :as pair]]
   (let [datestring (cf/unparse (cf/formatter "yyyy-MM-dd") date)]
     (if-not (and (mr/ok? (mc/update team-collection {:name p1} {$set {:lastpartner p2 :lastdate (cc/to-long date)}}))

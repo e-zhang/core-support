@@ -9,6 +9,8 @@
             [noir.validation :as valid]
             [noir.response :as resp]
             [clojure.string :as string]
+            [monger.json]
+            [cheshire.core :as json]
             [noir.session :as session]))
 
 (defpartial error-text [errors]
@@ -50,7 +52,7 @@
               (drop-down "project" [["Execution" "execution"]
                                    ["MarketData" "marketdata"]
                                    ["Helix" "helix"]])]
-            (valid/on-error :create error-text)
+            [:p (valid/on-error :create error-text)]
             (submit-button {:class "submit"} "submit")]))
 
 (defpage "/create" []
@@ -65,8 +67,15 @@
   (render "/create"))
     
 
+(defpage [:post "/admin"] {:as calc}
+  (team/reset-docs!)
+  (render "/admin"))
+
 
 (defpage "/admin" []
     (common/layout 
         [:h3 "Core Support Admin Page"]     
-        [:ul.items (team/get-all-members)]))
+        [:div (string/replace (json/generate-string (team/get-all-members) {:pretty true}) "\n" "<br>")]
+        (form-to [:post "/admin"] 
+                 [:p (valid/on-error :reset error-text)]
+                 (submit-button {:class "submit"} "Reset Docs"))))

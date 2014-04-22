@@ -2,6 +2,7 @@
             :description "Support schedule for CORE"
             :dependencies [[org.clojure/clojure "1.5.1"]
                            [org.clojure/math.combinatorics "0.0.7"]
+                           [cheshire "5.1.1"]
                            [com.novemberain/monger "1.7.0"]
                            [hiccup "1.0.5"]
                            [clj-time "0.7.0"]
