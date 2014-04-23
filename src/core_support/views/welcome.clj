@@ -12,7 +12,6 @@
      [:h3 (:day schedule) [:p (:partner1 schedule) "  -  " (:partner2 schedule)]]]))
 
 (defn get-support-schedule []
-  (team/get-weekly-schedule)
   [:div {:class "row"}
     (->> (team/get-weekdays) 
          (map team/get-support-schedule)

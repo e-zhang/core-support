@@ -98,25 +98,32 @@
        (get-time-score date (map :lastdate members))
        (get-partner-score members)))) 
 
-(defn get-best-score [members date]
+(defn get-scores [members date]
   (->> (comb/combinations (keys members) 2)
        (map #(assoc {} :pair % :score (score date (vals (select-keys members %)))))
-       (sort-by :score >)
-       ));(first)))
+       (sort-by :score >)))
+
+
+(defn get-best-score [scores]
+	(let [best (:score (first scores))]
+		(first (take-while #(>= (:score %) best) scores))))
+
 
 (defn get-weekdays []
-  (->> (cp/periodic-seq (ct/now) (ct/days 1)) 
+  (->> (cp/periodic-seq (ct/today-at-midnight) (ct/days 1)) 
        (drop-while #(> (ct/day-of-week %) 5))
        (take-while #(< (ct/day-of-week %) 6))))
 
-(defn get-weekly-schedule []
+
+(defn get-weekly-schedule! []
   (let [m (get-all-members)
         members (zipmap (map :name m) m)
         dates (get-weekdays)]
         (loop [members members dates dates]
-          (if-not (empty? dates) 
-            (let [support (get-best-score members (first dates))
-                  updated (update-support! (first dates) members (:pair (first support)))]
+          (if (empty? dates) 
+	    (valid/set-error :recalc "Recalced support schedule")
+            (let [support (get-scores members (first dates))
+                  updated (update-support! (first dates) members (:pair (get-best-score support)))]
               (do (pp/pprint support) (pp/pprint updated) (println (map cc/to-long dates)) (println "---------------")
               (recur updated (rest dates))))))))
 

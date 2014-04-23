@@ -67,15 +67,24 @@
   (render "/create"))
     
 
-(defpage [:post "/admin"] {:as calc}
-  (team/reset-docs!)
+(defpage [:post "/admin"] {:as action}
+  (cond 
+    (contains? action :reset) (team/reset-docs!)
+    (contains? action :recalc) (team/get-weekly-schedule!) )
   (render "/admin"))
 
 
 (defpage "/admin" []
     (common/layout 
         [:h3 "Core Support Admin Page"]     
-        [:div (string/replace (json/generate-string (team/get-all-members) {:pretty true}) "\n" "<br>")]
+	[:ul.actions
+	  [:li (link-to {:class "submit"} "/create" "New")]][:br]
+        [:div (string/replace (json/generate-string (team/get-all-members) {:pretty true}) "\n" "<br>")] [:br]
         (form-to [:post "/admin"] 
                  [:p (valid/on-error :reset error-text)]
-                 (submit-button {:class "submit"} "Reset Docs"))))
+		 (hidden-field :reset)			
+                 (submit-button {:class "submit"} "Reset Docs"))
+        (form-to [:post "/admin"] 
+                 [:p (valid/on-error :recalc error-text)]
+		 (hidden-field :recalc)			
+                 (submit-button {:class "submit"} "Recalc"))))
