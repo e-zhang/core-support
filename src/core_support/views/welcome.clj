@@ -6,18 +6,18 @@
   (:use [noir.core :only [defpage]]))
 
 
-(defn get-support-item [schedule]
+(defn create-support-item [schedule]
   (if schedule 
-    [:div {:class "col-md-4"} 
-     [:h3 (:day schedule) [:p (:partner1 schedule) "  -  " (:partner2 schedule)]]]))
-
-(defn get-support-schedule []
-  [:div {:class "row"}
-    (->> (team/get-weekdays) 
-         (map team/get-support-schedule)
-         (map get-support-item))])
+    [:div 
+     (if (team/today? (:day schedule))
+	{:class "col-md-2" :id "today"} 
+	{:class "col-md-2"})
+     [:h3 (:day schedule)]
+     [:br]
+     [:div (:primary schedule)]
+     [:div (:secondary schedule)]]))
 
 (defpage "/" []
          (common/layout
            [:p "Welcome to core-support"]
-           (get-support-schedule)))
+           (common/create-support-schedule create-support-item)))
