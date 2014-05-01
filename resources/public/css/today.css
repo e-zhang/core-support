@@ -1,0 +1,16 @@
+#today {
+    border : 2px solid;
+    border-color : dimgray;
+    border-radius : 5px;
+    padding-bottom : 10px;
+    padding-top : -5px;
+}
+
+.partner {
+    background-color: gainsboro;
+    margin: 10px;
+}
+
+select{
+    display: none;
+}
